@@ -10,13 +10,13 @@
 
 pthread_mutex_t bridge;
 pthread_cond_t gate;
-int bridgeDirection = 1; //direction for thr bridge movement
-int limit = 3;	//number of cars that can cross the bridge form same side at one change
-int carsDrived = 0;	// counter of cars that cross the bridge
+int bridgeDirection = 1;            //direction for thr bridge movement
+int limit = 3;	                    //number of cars that can cross the bridge form same side at one change
+int carsDrived = 0;	                // counter of cars that cross the bridge
 
 
-int cityStay[2]; //number of cars staying in cityX
-int cityWait[2]; //number of cars waiting to leave cityX
+int cityStay[2];                    //number of cars staying in cityX
+int cityWait[2];                    //number of cars waiting to leave cityX
 
 void display(int carNumber, int from){
 	printf("A-%d %d>>>", cityStay[0], cityWait[0]);
@@ -38,36 +38,36 @@ int opposite(int city){
 
 void *carFunction(void *arg){
 	int nr = (int)arg;
-    int city = 0; // 0 - cityA, 1 - cityB
+    int city = 0;                                   // 0 - cityA, 1 - cityB
 	cityStay[city]++;
 
 	for(;;){
 		usleep(constTime+rand()%constTime*1000);	//car is staying in the city for some time
-			cityStay[city]--;		//car signals need for leave and wait in queue
-			cityWait[city]++;		// *
+			cityStay[city]--;		                //car signals need for leave and wait in queue
+			cityWait[city]++;		                // *
 			printf("do kolejki %d", nr);
 		pthread_mutex_lock(&bridge);
-		while(bridgeDirection==city){	//if direction of movement is facing towards the car
-			pthread_cond_wait(&gate, &bridge);	//wait for direction change
+		while(bridgeDirection==city){	            //if direction of movement is facing towards the car
+			pthread_cond_wait(&gate, &bridge);	    //wait for direction change
 		}
-		cityWait[city]--;		//car leave city and enter the bridge
-		display(nr,city);		//car passes the bridge
-		usleep(constTime*100);	//*
-		city=opposite(city);	//car appers on the other side
-		cityStay[city]++;		//*
+		cityWait[city]--;		                    //car leave city and enter the bridge
+		display(nr,city);		                    //car passes the bridge
+		usleep(constTime*100);	                    //*
+		city=opposite(city);	                    //car appers on the other side
+		cityStay[city]++;		                    //*
 		carsDrived++;
 		if(carsDrived>limit||cityWait[opposite(bridgeDirection)]==0){	//if no one is left waiting or if limit of cars have been reached
-			carsDrived = 0;	//reset counter
-			bridgeDirection = opposite(bridgeDirection);	//change direction of the movement
-			pthread_cond_broadcast(&gate);					//inform waiting cars about change
+			carsDrived = 0;	                                            //reset counter
+			bridgeDirection = opposite(bridgeDirection);	            //change direction of the movement
+			pthread_cond_broadcast(&gate);					            //inform waiting cars about change
 		}
 
-		pthread_mutex_unlock(&bridge);	//unlock bridge
+		pthread_mutex_unlock(&bridge);	                                //unlock bridge
 	}
 }
 
 
-int main(){
+int main(int argc, char* argv[]){
 
     pthread_t cars[N];
 

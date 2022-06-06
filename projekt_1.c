@@ -9,8 +9,8 @@
 
 pthread_mutex_t bridge[2];
 
-int cityStay[2]; //number of cars staying in cityX
-int cityWait[2]; //number of cars waiting to leave cityX
+int cityStay[2];                                      //number of cars staying in cityX
+int cityWait[2];                                      //number of cars waiting to leave cityX
 
 void display(int carNumber, int from){
 	printf("A-%d %d>>>", cityStay[0], cityWait[0]);
@@ -32,21 +32,21 @@ int opposite(int city){
 
 void *carFunction(void *arg){
 	int nr = (int)arg;
-    int city = rand()%2; // 0 - cityA, 1 - cityB
+    int city = rand()%2;                                    // 0 - cityA, 1 - cityB
 	cityStay[city]++;
 
 	for(;;){
-		usleep(constTime+rand()%constTime*1000);	//car is staying in the city
-			cityStay[city]--;		//car signals need for leave and wait in queue
-			cityWait[city]++;		// *
+		usleep(constTime+rand()%constTime*1000);            //car is staying in the city
+			cityStay[city]--;		                        //car signals need for leave and wait in queue
+			cityWait[city]++;		                        // *
 		pthread_mutex_lock(bridge+city);
-			cityWait[city]--;	//car leave city and enter the bridge
-			display(nr,city);	//car passes the bridge
-			usleep(constTime);	//*
-			city=opposite(city);//car appers on the other side
-			cityStay[city]++;	//*
+			cityWait[city]--;	                            //car leave city and enter the bridge
+			display(nr,city);	                            //car passes the bridge
+			usleep(constTime);	                            //*
+			city=opposite(city);                            //car appers on the other side
+			cityStay[city]++;	                            //*
 		if(cityWait[city]!=0||cityWait[opposite(city)]+cityStay[opposite(city)]==0){	
-			pthread_mutex_unlock(bridge+city); //unlock bridge for cars from this side
+			pthread_mutex_unlock(bridge+city);              //unlock bridge for cars from this side
 		}
 		else 
 			pthread_mutex_unlock(bridge+opposite(city));	//unlock other side
@@ -54,7 +54,7 @@ void *carFunction(void *arg){
 }
 
 
-int main(){
+int main(int argc, char* argv[]){
 
     pthread_t cars[N];
 
