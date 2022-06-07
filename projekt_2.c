@@ -4,16 +4,13 @@
 #include <time.h>
 #include <unistd.h>
 
-#define N 10
 #define constTime 10000
-
 
 pthread_mutex_t bridge;
 pthread_cond_t gate;
 int bridgeDirection = 1;            //direction for thr bridge movement
 int limit = 3;	                    //number of cars that can cross the bridge form same side at one change
 int carsDrived = 0;	                // counter of cars that cross the bridge
-
 
 int cityStay[2];                    //number of cars staying in cityX
 int cityWait[2];                    //number of cars waiting to leave cityX
@@ -69,6 +66,9 @@ void *carFunction(void *arg){
 
 int main(int argc, char* argv[]){
 
+	int N = atoi(argv[1]);
+	if(N<=0)exit(0);
+	
     pthread_t cars[N];
 
 	srand(time(NULL));

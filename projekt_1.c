@@ -4,7 +4,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define N 5
 #define constTime 1000
 
 pthread_mutex_t bridge[2];
@@ -55,6 +54,9 @@ void *carFunction(void *arg){
 
 
 int main(int argc, char* argv[]){
+
+	int N = atoi(argv[1]);
+	if(N<=0)exit(0);
 
     pthread_t cars[N];
 
